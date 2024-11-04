@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Detalle de producto</h1>
+
+<div th:if="${product}">
+    <p th:text="${product.id}"></p>
+    <p th:text="${product.name}"></p>
+    <p th:text="${product.quantity}"></p>
+    <p th:text="${product.price}"></p>
+</div>
+<div th:unless="${product}">
+    No se ha encontrado el producto.
+</div>
+
+<a href="/products">Volver al listado de productos</a>
+
+<div>Opiniones del producto</div>
+
+
+</body>
+</html>

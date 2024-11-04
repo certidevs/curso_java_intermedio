@@ -1,11 +1,10 @@
 package com.certidevs.controller;
 
 import com.certidevs.model.Product;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,19 +39,40 @@ public class ProductController {
     }
 
     // findById
-    // http://locahost:8080/products/1
-    // http://locahost:8080/products/2
-    // http://locahost:8080/products/3
+    // http://localhost:8080/products/1
+    // http://localhost:8080/products/2
+    // http://localhost:8080/products/3
     @GetMapping("products/{id}")
-    public String findById(@PathVariable Long id) {
+    public String findById(@PathVariable Long id, Model model) {
+        // Optional<Product> productOpt = productRepository.findById(id);
+        var product = Product.builder().id(id).name("producto").price(33d).build();
+        model.addAttribute("product", product);
+        // opinionRepository.findByProductId()
         return "product-detail";
     }
 
     // getFormToCreate
+    // http://localhost:8080/products/create
+    @GetMapping("products/create")
+    public String getFormToCreate(Model model) {
+        // producto vacío para enlazar sus atributos con los input del formulario
+        model.addAttribute("product", new Product());
+        // si quisieramos un selector de fabricantes, ....
+        // model.addAttribute("manufactures", manufacturerRepository.findAll());
+        return "product-form";
+    }
 
     // getFormToUpdate
 
     // save
+    @PostMapping("products")
+    public String save(@ModelAttribute Product product) {
+        // productRepository.save(product)
+        System.out.println(product);
+        return "redirect:/products";
+    }
+
+    // POST products
 
     // deleteById
 
