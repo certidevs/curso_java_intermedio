@@ -4,6 +4,7 @@ import com.certidevs.model.Product;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -39,6 +40,13 @@ public class ProductController {
     }
 
     // findById
+    // http://locahost:8080/products/1
+    // http://locahost:8080/products/2
+    // http://locahost:8080/products/3
+    @GetMapping("products/{id}")
+    public String findById(@PathVariable Long id) {
+        return "product-detail";
+    }
 
     // getFormToCreate
 
