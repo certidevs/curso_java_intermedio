@@ -2,6 +2,7 @@ package com.certidevs.controller;
 
 import com.certidevs.model.Product;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Controller
 public class ProductController {
 
@@ -53,6 +55,7 @@ public class ProductController {
 
     // getFormToCreate
     // http://localhost:8080/products/create
+    // Metodo para obtener formulario vacío para crear un nuevo producto
     @GetMapping("products/create")
     public String getFormToCreate(Model model) {
         // producto vacío para enlazar sus atributos con los input del formulario
@@ -63,20 +66,29 @@ public class ProductController {
     }
 
     // getFormToUpdate
+    // Metodo para obtener formulario relleno para editar un producto existente
+    @GetMapping("products/edit/{id}")
+    public String getFormToUpdate(@PathVariable Long id, Model model) {
+        // productRepository.findById
+        var product = Product.builder().id(id).name("ordenador").price(990.23).quantity(2).build();
+        model.addAttribute("product", product);
+        return "product-form";
+    }
 
     // save
     @PostMapping("products")
     public String save(@ModelAttribute Product product) {
         // productRepository.save(product)
-        System.out.println(product);
+        log.info("Producto a guardar {}", product);
         return "redirect:/products";
     }
 
-    // POST products
-
-    // deleteById
-
-    // deleteAll
+    @GetMapping("products/delete/{id}")
+    public String deleteById(@PathVariable Long id, Model model) {
+        log.info("Producto a borrar {}", id);
+        // productRepository.deleteById(id)
+        return "redirect:/products";
+    }
 
 
 }
