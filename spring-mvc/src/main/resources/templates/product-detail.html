@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Detalle de producto</title>
 </head>
 <body>
 <h1>Detalle de producto</h1>
@@ -12,15 +12,18 @@
     <p th:text="${product.name}"></p>
     <p th:text="${product.quantity}"></p>
     <p th:text="${product.price}"></p>
+    <a th:href="@{/products/edit/{id}(id=${product.id})}">Editar</a>
+    <a th:href="@{/products/delete/{id}(id=${product.id})}">Borrar</a>
+    <a href="/products">Volver al listado de productos</a>
 </div>
 <div th:unless="${product}">
     No se ha encontrado el producto.
 </div>
 
-<a href="/products">Volver al listado de productos</a>
 
-<div>Opiniones del producto</div>
 
+<!--<div>Opiniones del producto</div>-->
+<!-- TODO: si hubiera una entidad Opinion ManyToOne asociada Product podemos traer y mostrar las opiniones-->
 
 </body>
 </html>

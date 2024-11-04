@@ -32,6 +32,9 @@
     <button type="submit">Crear producto</button>
 </form>
 
+<a href="/products">Volver</a>
+<a th:href="@{/products/{id}(id=${product.id})}">Ver detalle</a>
+
 
 </body>
 </html>

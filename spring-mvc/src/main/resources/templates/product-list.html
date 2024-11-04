@@ -7,14 +7,20 @@
 <body>
 <h1>Listado productos</h1>
 
-<ul>
+<a href="/products/create">Crear producto</a>
+<ul th:if="${products.size() > 0}">
     <li th:each="product : ${products}">
         <span th:text="${product.id}"></span>
         <span th:text="${product.name}"></span>
         <span th:text="${product.quantity}"></span>
         <span th:text="${product.price}"></span>
+        <a th:href="@{/products/{id}(id=${product.id})}">Ver</a>
+        <a th:href="@{/products/edit/{id}(id=${product.id})}">Editar</a>
+        <a th:href="@{/products/delete/{id}(id=${product.id})}">Borrar</a>
     </li>
 </ul>
-
+<p th:if="${products.size() == 0}">
+    No hay productos.
+</p>
 </body>
 </html>
