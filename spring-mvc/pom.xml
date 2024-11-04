@@ -49,6 +49,10 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+<!--        aquí agregaremos más dependencias para : base de datos, seguridad, bootstrap etc...-->
+
+
     </dependencies>
 
     <build>
