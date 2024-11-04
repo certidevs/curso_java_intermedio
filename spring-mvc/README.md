@@ -1,0 +1,6 @@
+
+## Plugins
+
+* Lombok
+* JPA Buddy
+
