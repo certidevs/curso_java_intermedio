@@ -24,6 +24,12 @@ public class Product {
     @Column(columnDefinition = "boolean default true")
     private Boolean active;
 
+    @ToString.Exclude
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
+    @JoinColumn(name = "id_manufacturer")
+    private Manufacturer manufacturer;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
