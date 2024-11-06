@@ -24,6 +24,8 @@ public class Product {
     @Column(columnDefinition = "boolean default true")
     private Boolean active;
 
+
+    // Product es owner de la asociación con Manufacturer
     @ToString.Exclude
 //    @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne()

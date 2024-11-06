@@ -18,6 +18,8 @@ class ProductRepositoryTest {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ManufacturerRepository manufacturerRepository;
 
     @Test
     void findAll() {
@@ -86,5 +88,14 @@ class ProductRepositoryTest {
 //        Hibernate: select p1_0.id,p1_0.active,m1_0.id,m1_0.city,m1_0.name,m1_0.start_year,p1_0.name,p1_0.price,p1_0.quantity from products p1_0 join manufacturers m1_0 on m1_0.id=p1_0.id_manufacturer where p1_0.id_manufacturer=?
         assertEquals("Adidas", products.get(0).getManufacturer().getName());
     }
-    
+
+    @Test
+    @DisplayName("Borrar productos de un fabricante")
+    @Sql("data_products_manufacturers.sql")
+    void deleteByManufacturer() {
+        var manufacturer = manufacturerRepository.findAll().get(0);
+        long deleted = productRepository.deleteByManufacturer(manufacturer);
+        assertTrue(deleted >= 3);
+        assertEquals(0, productRepository.count());
+    }
 }

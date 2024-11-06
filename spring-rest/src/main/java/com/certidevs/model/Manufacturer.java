@@ -3,6 +3,9 @@ package com.certidevs.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,4 +22,8 @@ public class Manufacturer {
     private String city;
     private Integer startYear;
 
+    // bidireccional con products
+
+    @OneToMany(mappedBy = "manufacturer")
+    List<Product> products = new ArrayList<>();
 }

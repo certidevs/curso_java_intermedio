@@ -1,5 +1,7 @@
 package com.certidevs.repository;
 
+import com.certidevs.dto.ManufacturerWithProductDataDTO;
+import com.certidevs.model.Manufacturer;
 import com.certidevs.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,6 +25,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     where p.manufacturer.id = ?1
     """)
     List<Product> findByManufacturer_Id_Query(Long id);
+
+    long deleteByManufacturer(Manufacturer manufacturer);
 
 
 }
