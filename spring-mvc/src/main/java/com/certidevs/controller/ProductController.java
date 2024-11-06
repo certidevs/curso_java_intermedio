@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Slf4j
@@ -43,10 +45,10 @@ public class ProductController {
     // http://localhost:8080/products/3
     @GetMapping("products/{id}")
     public String findById(@PathVariable Long id, Model model) {
-        // Optional<Product> productOpt = productRepository.findById(id);
-        var product = Product.builder().id(id).name("producto").price(33d).build();
-        model.addAttribute("product", product);
-        // opinionRepository.findByProductId()
+//         Optional<Product> productOpt = productRepository.findById(id);
+//         if(productOpt.isPresent())
+//             model.addAttribute("product", productOpt.get());
+        productRepository.findById(id).ifPresent(product -> model.addAttribute("product", product));
         return "product-detail";
     }
 
@@ -66,24 +68,35 @@ public class ProductController {
     // Metodo para obtener formulario relleno para editar un producto existente
     @GetMapping("products/edit/{id}")
     public String getFormToUpdate(@PathVariable Long id, Model model) {
-        // productRepository.findById
-        var product = Product.builder().id(id).name("ordenador").price(990.23).quantity(2).build();
-        model.addAttribute("product", product);
+        productRepository.findById(id).ifPresent(product -> model.addAttribute("product", product));
+
+//        return productRepository.findById(id).map(product -> {
+//            model.addAttribute("product", product);
+//            return "product-detail";
+//        })
+//                .orElse("error")
+//                .orElseThrow(() -> new NoSuchElementException("producto no encontrado"))
+//                ;
+
         return "product-form";
     }
 
     // save
     @PostMapping("products")
     public String save(@ModelAttribute Product product) {
-        // productRepository.save(product)
         log.info("Producto a guardar {}", product);
+        productRepository.save(product);
         return "redirect:/products";
     }
 
     @GetMapping("products/delete/{id}")
-    public String deleteById(@PathVariable Long id, Model model) {
+    public String deleteById(@PathVariable Long id) {
         log.info("Producto a borrar {}", id);
-        // productRepository.deleteById(id)
+        try {
+            productRepository.deleteById(id);
+        } catch (Exception e) {
+            log.error("Error borrando producto", e);
+        }
         return "redirect:/products";
     }
 
