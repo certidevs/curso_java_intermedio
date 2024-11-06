@@ -1,8 +1,11 @@
 package com.certidevs.controller;
 
 import com.certidevs.model.Product;
+import com.certidevs.repository.ProductRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@AllArgsConstructor
 @Slf4j
 @Controller
 public class ProductController {
+
+    private final ProductRepository productRepository;
 
     // http://localhost:8080/hola
     @GetMapping("hola")
@@ -27,16 +33,7 @@ public class ProductController {
     // http://localhost:8080/products
     @GetMapping("products")
     public String findAll(Model model) {
-
-        // var products = productRepository.findAll()
-        List<Product> products = List.of(
-                new Product(1L, null, 33.12, 3),
-                Product.builder().id(2L).name("silla").price(500d).quantity(1).build(),
-                Product.builder().id(3L).name("Microfono").price(500d).quantity(1).build(),
-                Product.builder().id(4L).name("Mesa").price(500d).quantity(1).build()
-        );
-        model.addAttribute("products", products);
-
+        model.addAttribute("products", productRepository.findAll());
         return "product-list";
     }
 

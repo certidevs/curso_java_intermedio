@@ -45,3 +45,12 @@ Completo:
 ```
 
 Para configurar mysql hay que añadir la url usuario y contraseña en el archivo application.properties
+
+Para MySQL es necesario:
+
+* MySQL Community Server corriendo como servicio en Windows (se comprueba en admin. tareas en servicios)
+* MySQL Workbench (es el cliente de interfaz de usuario)
+
+* https://certidevs.com/tutorial-sql-mysql-instalacion
+* Alternativa: simplemente usar la base de datos H2 en memoria
+* Si hay problema al arrancar puede ser mejor quitar el parámetro ?createDatabaseIfNotExist=true y crear la base de datos manualmente
