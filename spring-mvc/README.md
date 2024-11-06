@@ -54,3 +54,16 @@ Para MySQL es necesario:
 * https://certidevs.com/tutorial-sql-mysql-instalacion
 * Alternativa: simplemente usar la base de datos H2 en memoria
 * Si hay problema al arrancar puede ser mejor quitar el parámetro ?createDatabaseIfNotExist=true y crear la base de datos manualmente
+
+
+--- 
+* HTML y MVC?
+
+* Asociación entidad Manufacturer: ManyToOne
+* Filtros consultas en repositorios: métodos derivados y métodos con JPQL
+* Controladores API REST
+* Testing de los controladores
+* Testing Repositorio para practicar las consultas
+* Spring Security JWT en API REST
+* API REST: Postman y Open API Swagger
+* Gestión errores con Advice
