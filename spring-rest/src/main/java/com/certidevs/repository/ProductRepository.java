@@ -52,4 +52,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     int deleteAllBy_ActiveTrue_And_IdIn(List<Long> ids);
 
 
+    List<Product> findByPriceBetween(Double minPrice, Double maxPrice);
+
+    List<Product> findAllByPriceIsLessThanEqual(Double maxPrice);
 }

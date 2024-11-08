@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @RequestMapping("api")
 @RestController
 public class ProductController {
+    public static final double IVA_21 = 1.21;
     private final ProductRepository productRepository;
 
     // GET http://localhost:8080/api/products
@@ -29,6 +31,48 @@ public class ProductController {
         var products = productRepository.findAll();
         return ResponseEntity.ok(products);
     }
+    @GetMapping("products-iva")
+    public ResponseEntity<List<Product>> findAllWithIVA() {
+//        var products = productRepository.findAll().stream().map(p -> {
+//            p.setPrice(p.getPrice() * 1.21);
+//            return p;
+//        }).toList();
+
+        var products = productRepository.findAll();
+        products.forEach(p -> p.setPrice(p.getPrice() * IVA_21));
+        return ResponseEntity.ok(products);
+    }
+
+//    @GetMapping("products-by-price/{minPrice}/{maxPrice}")
+//    public ResponseEntity<List<Product>> findAllByPrice(@PathVariable Double minPrice, @PathVariable Double maxPrice) {
+
+    // /api/products-by-price?minPrice=30&maxPrice=50
+    @GetMapping("products-by-price")
+    public ResponseEntity<List<Product>> findAllByPrice(
+            @RequestParam(required = false) Double minPrice,
+            @PathVariable(required = false) Double maxPrice
+    ) {
+
+        List<Product> products;
+        if (minPrice != null && maxPrice != null)
+            products = productRepository.findByPriceBetween(minPrice, maxPrice);
+        else if(minPrice != null)
+            products = productRepository.findAllByPriceIsGreaterThanEqual(minPrice);
+        else if (maxPrice != null)
+            products = productRepository.findAllByPriceIsLessThanEqual(maxPrice);
+        else
+            products = productRepository.findAll();
+
+        return ResponseEntity.ok(products);
+    }
+
+    @PostMapping("products/filter")
+    public ResponseEntity<List<Product>> findByFilter(@RequestBody Product product) {
+        var products = productRepository.findAll(Example.of(product));
+        return ResponseEntity.ok(products);
+    }
+
+
     // GET http://localhost:8080/api/products/1
     @GetMapping("products/{id}")
     public ResponseEntity<Product> findById(@PathVariable Long id) {
@@ -38,13 +82,15 @@ public class ProductController {
 //            return ResponseEntity.ok(productOpt.get());
 //        else
 //            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
         return productRepository.findById(id)
                 .map(product -> ResponseEntity.ok(product))
 //                .orElseThrow();
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     }
+
+
+
 
     // POST create http://localhost:8080/api/products
     @PostMapping("products")
