@@ -2,7 +2,9 @@ package com.certidevs.controller;
 
 import com.certidevs.model.Product;
 import com.certidevs.repository.ProductRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 // http://localhost:8080/swagger-ui/index.html
 @AllArgsConstructor
@@ -61,6 +64,55 @@ public class ProductController {
     }
 
     // PUT update
+    @PutMapping("products/{id}")
+    public ResponseEntity<Product> update (@PathVariable Long id, @RequestBody Product product) {
+        if (id == null || !productRepository.existsById(id))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 400 No puede tener ID porque es nueva creación
+
+        // Opción 1: guardar el producto tal cual llega:
+         productRepository.save(product);
+         return ResponseEntity.ok(product);
+
+        // Opción 2: sacar el producto de base de datos y solo guardar las propiedades que queramos:
+//        return productRepository.findById(id).map(productDB -> {
+//            productDB.setPrice(product.getPrice());
+//            productDB.setQuantity(product.getQuantity());
+//            // BeanUtils.copyProperties(product, productDB);
+//            productRepository.save(productDB);
+//            return ResponseEntity.ok(productDB);
+//        }).orElseThrow(
+//                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+//        );
+
+    }
+
+    @PatchMapping(value = "products/{id}", consumes = {"application/json", "application/merge-patch+json"})
+    public ResponseEntity<Product> partialUpdate(
+            @PathVariable Long id, @RequestBody Product product
+    ) {
+        if (id == null || !productRepository.existsById(id))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        Optional<Product> productOpt = productRepository.findById(id).map(existingProduct -> {
+            if (product.getPrice() != null) existingProduct.setPrice(product.getPrice());
+            if (product.getQuantity() != null) existingProduct.setQuantity(product.getQuantity());
+            if (product.getName() != null) existingProduct.setName(product.getName());
+            return existingProduct;
+        }).map(productRepository::save);
+
+        return ResponseEntity.ok(
+                productOpt.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+        );
+
+
+//        if(productOpt.isPresent())
+//            return ResponseEntity.ok(productOpt.get());
+//        else
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+    }
+
+
 
     // DELETE deleteById
     // DELETE deleteAll
