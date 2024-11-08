@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 // https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
+// https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#a4665
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findAllByPriceIsGreaterThanEqual(Double price);
@@ -34,6 +35,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     int updatePriceByPriceGreaterThan(Double price, Double price1);
 
     long deleteByManufacturer(Manufacturer manufacturer);
+
+    @Transactional
+    @Modifying
+    @Query("""
+    update Product p
+    set p.manufacturer = null
+    where p.manufacturer.id = ?1
+    """)
+    int updateSetManufacturerToNullByManufacturerId(Long manufacturerId);
 
 
 }

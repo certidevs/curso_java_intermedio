@@ -4,6 +4,7 @@ import com.certidevs.model.Product;
 import com.certidevs.repository.ProductRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 // http://localhost:8080/swagger-ui/index.html
+@Slf4j
 @AllArgsConstructor
 @RequestMapping("api")
 @RestController
@@ -112,7 +114,26 @@ public class ProductController {
 
     }
 
+    @DeleteMapping("products/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
 
+        // Opción 1: lo borramos:
+//        try {
+//            productRepository.deleteById(id);
+//            return ResponseEntity.noContent().build(); // 204 No content
+//        } catch (Exception e) {
+//            log.error("Cant delete product ", e);
+//            throw new ResponseStatusException(HttpStatus.CONFLICT);
+//        }
+
+        // Opción 2: lo desactivamos
+        productRepository.findById(id).map(product -> {
+            product.setActive(false);
+            return productRepository.save(product);
+        });
+        return ResponseEntity.noContent().build();
+
+    }
 
     // DELETE deleteById
     // DELETE deleteAll
