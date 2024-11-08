@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 
 // https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
@@ -44,6 +45,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     where p.manufacturer.id = ?1
     """)
     int updateSetManufacturerToNullByManufacturerId(Long manufacturerId);
+
+    @Transactional
+    @Modifying
+    @Query("delete from Product p where p.id in ?1 and p.active = true")
+    int deleteAllBy_ActiveTrue_And_IdIn(List<Long> ids);
 
 
 }

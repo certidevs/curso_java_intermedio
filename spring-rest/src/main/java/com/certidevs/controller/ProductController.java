@@ -135,7 +135,26 @@ public class ProductController {
 
     }
 
-    // DELETE deleteById
-    // DELETE deleteAll
+    // @RequestParam DELETE /api/products?ids=1,2,3,4,5,6,7,8,9,10
+    // @RequestBody DELETE /api/products { "ids": [1, 2, 3]}
+    @DeleteMapping("products")
+    public ResponseEntity<Void> deleteAll(@RequestBody List<Long> ids) {
+        try {
+            // Lanza dos consultas por cada producto a borrar
+            // Hibernate: select p1_0.id,p1_0.active,m1_0.id,m1_0.city,m1_0.name,m1_0.start_year,p1_0.name,p1_0.price,p1_0.quantity from products p1_0 left join manufacturers m1_0 on m1_0.id=p1_0.id_manufacturer where p1_0.id=?
+            // Hibernate: delete from products where id=?
+            //productRepository.deleteAllById(ids);
+
+            // Borra en una sola sentencia: Hibernate: delete p1_0 from products p1_0 where p1_0.id in (?,?,?,?,?,?,?)
+            productRepository.deleteAllByIdInBatch(ids);
+
+            // Una sola sentencia  Hibernate: delete p1_0 from products p1_0 where p1_0.id in (?,?,?) and p1_0.active=1
+            // productRepository.deleteAllBy_ActiveTrue_And_IdIn(ids);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            log.error("Cant delete product ", e);
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+    }
 
 }
