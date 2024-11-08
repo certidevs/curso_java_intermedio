@@ -14,10 +14,11 @@ public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long
     SELECT new com.certidevs.dto.ManufacturerWithProductDataDTO(
     m.id,
     m.name,
-    COUNT(m),
+    COUNT(p),
     SUM(p.price)
     ) FROM Manufacturer m
     LEFT JOIN Product p ON m.id = p.manufacturer.id
+    GROUP BY m.id, m.name
     """)
     List<ManufacturerWithProductDataDTO> findAllWithCalculatedProductsStats();
 

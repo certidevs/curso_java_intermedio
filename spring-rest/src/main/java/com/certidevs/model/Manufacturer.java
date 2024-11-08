@@ -1,5 +1,7 @@
 package com.certidevs.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +26,9 @@ public class Manufacturer {
 
     // bidireccional con products
 
+    // Al ser bidireccional puede formar un ciclo infinito de JSON que hay que cortar ignorando en algún punto la relación
+    @JsonIgnore
+    // @JsonIgnoreProperties({"manufacturer"})
     @OneToMany(mappedBy = "manufacturer")
     List<Product> products = new ArrayList<>();
 }
