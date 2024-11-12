@@ -14,8 +14,10 @@ import org.mockito.internal.matchers.Any;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -174,6 +176,45 @@ class ProductControllerUnitTest {
 
         // verify(productRepository, times(1)).findAll();
         verify(productRepository).findAll(ArgumentMatchers.<Example<Product>>any());
+    }
+
+    @Test
+    @DisplayName("Buscar producto por id, producto sí existe")
+    void findById_OK() {
+        Product product = Product.builder().id(1L).price(50d).build();
+//        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+
+        var response = productController.findById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Comprobar status HTTP es 200 OK");
+        // assertEquals(product, response.getBody());
+
+        // assertAll permite que se ejecuten todas aunque alguna falle, así vemos todos los fallos
+        assertAll(
+                () -> assertEquals(product.getId(), response.getBody().getId())
+                // () -> assertNotEquals(product.getPrice(), response.getBody().getPrice())
+        );
+
+
+        verify(productRepository).findById(1L);
+
+
+    }
+    @Test
+    @DisplayName("Buscar producto por id, producto NO existe")
+    void findById_NotFound_Empty() {
+        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+//        try {
+//            productController.findById(1L);
+//            fail("Debería haberse lanzado una excepción");
+//        } catch (Exception e) {
+//           // verificar excepción
+//        }
+        assertThrows(
+                ResponseStatusException.class,
+                () -> productController.findById(1L)
+        );
     }
 
 
