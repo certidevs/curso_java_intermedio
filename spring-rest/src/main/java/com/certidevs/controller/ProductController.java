@@ -50,7 +50,7 @@ public class ProductController {
     @GetMapping("products-by-price")
     public ResponseEntity<List<Product>> findAllByPrice(
             @RequestParam(required = false) Double minPrice,
-            @PathVariable(required = false) Double maxPrice
+            @RequestParam(required = false) Double maxPrice
     ) {
 
         List<Product> products;
