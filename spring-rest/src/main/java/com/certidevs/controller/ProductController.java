@@ -141,6 +141,16 @@ public class ProductController {
         if (id == null || !productRepository.existsById(id))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
+
+        // Dando por hecho que el Product sí existe porque se validó en el existsById
+//        var productDB = productRepository.findById(id).get();
+//        if (product.getPrice() != null) productDB.setPrice(product.getPrice());
+//        if (product.getQuantity() != null) productDB.setQuantity(product.getQuantity());
+//        if (product.getName() != null) productDB.setName(product.getName());
+//        return ResponseEntity.ok(productDB);
+
+        // No obstante alguien podría justo borrarlo después de la validación
+        // por lo tanto es buena idea usar el optional y lanzar excepción si no existe
         Optional<Product> productOpt = productRepository.findById(id).map(existingProduct -> {
             if (product.getPrice() != null) existingProduct.setPrice(product.getPrice());
             if (product.getQuantity() != null) existingProduct.setQuantity(product.getQuantity());

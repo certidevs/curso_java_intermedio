@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.matchers.Any;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -217,5 +218,141 @@ class ProductControllerUnitTest {
         );
     }
 
+    @Test
+    void create_BadRequest() {
+        Product product = Product.builder().id(1L).price(50d).build();
+
+        var exception = assertThrows(
+                ResponseStatusException.class,
+                () -> productController.create(product)
+        );
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    }
+
+    @Test
+    void create_OK() {
+        Product product = Product.builder()
+                .name("prod1")
+                .price(50d)
+                .build();
+
+        // Captura el argumento product y simula que se le genera
+        // un id como lo haría la base de datos real
+        when(productRepository.save(product)).thenAnswer(invocation -> {
+            Product productArgument = invocation.getArgument(0);
+            productArgument.setId(1L);
+            return productArgument;
+        });
+
+        var response = productController.create(product);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getHeaders().getLocation());
+        assertEquals("/api/products/1", response.getHeaders().getLocation().toString());
+
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getId());
+        assertEquals("prod1", response.getBody().getName());
+        assertEquals(50d, response.getBody().getPrice());
+
+    }
+
+    @Test
+    void created_conflict() {
+        Product product = Product.builder()
+                .name("prod1")
+                .price(50d)
+                .build();
+
+//        doThrow(new RuntimeException())
+//                .when(productRepository)
+//                .save(product);
+//        doThrow(new DataIntegrityViolationException("Foreign Key error"))
+//                .when(productRepository)
+//                .save(product);
+        when(productRepository.save(product)).thenThrow(new DataIntegrityViolationException("Conflicto"));
+
+        var exception = assertThrows(
+                ResponseStatusException.class,
+                () -> productController.create(product)
+        );
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Actualizar producto - Id null lanza excepción")
+    void update_IdNull() {
+        assertThrows(
+                ResponseStatusException.class,
+                () -> productController.update(null, null)
+        );
+    }
+
+    @Test
+    @DisplayName("Actualizar producto - producto no existe")
+    void update_NotExistById(){
+        when(productRepository.existsById(1L)).thenReturn(false);
+        assertThrows(
+                ResponseStatusException.class,
+                () -> productController.update(1L, null)
+        );
+    }
+
+    @Test
+    @DisplayName("Actualizar producto - OK")
+    void update_OK() {
+        Product product = Product.builder()
+                .id(1L)
+                .name("prod1")
+                .price(50d)
+                .build();
+
+        when(productRepository.existsById(1L)).thenReturn(true);
+        var response = productController.update(1L, product);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(product.getId(), response.getBody().getId());
+        assertEquals(product.getName(), response.getBody().getName());
+
+    }
+
+    @Test
+    void partialUpdate_findById_OK() {
+        when(productRepository.existsById(1L)).thenReturn(true);
+
+        Product productFromDB = Product.builder()
+                .id(1L).price(50d).quantity(1).name("prod1").active(true)
+                .build();
+        when(productRepository.findById(1L)).thenReturn(Optional.of(productFromDB));
+        when(productRepository.save(productFromDB)).thenReturn(productFromDB);
+
+        Product editedProduct = Product.builder()
+                .id(1L).price(60d).quantity(2).name("prod1 edit").active(false)
+                .build();
+
+        var response = productController.partialUpdate(1L, editedProduct);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        // asserts para comprobar que el producto de base de datos (el que devuelve el repositorio)
+        // ha ido modificado por el controlador:
+        assertEquals(editedProduct.getPrice(), productFromDB.getPrice());
+        assertEquals(editedProduct.getPrice(), response.getBody().getPrice());
+        assertEquals(editedProduct.getQuantity(), productFromDB.getQuantity());
+        assertEquals(editedProduct.getName(), productFromDB.getName());
+        assertNotEquals(editedProduct.getActive(), productFromDB.getActive());
+        assertTrue(productFromDB.getActive());
+
+    }
+    @Test
+    void partialUpdate_findById_NotFound() {
+        when(productRepository.existsById(1L)).thenReturn(true);
+        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+        var exception = assertThrows(
+                ResponseStatusException.class,
+                () -> productController.partialUpdate(1L, null)
+        );
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+    }
 
 }
