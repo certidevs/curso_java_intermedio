@@ -32,6 +32,7 @@ Test unitario:
 * Fáciles de leer
 
 No carga la base de datos ni cargamos Spring, queremos velocidad.
+Solamente testea código Java con JUnit 5 y Mockito, no usa Spring ni base de datos, lo cuál es ideal para conseguir rapidez de ejecución.
  */
 @ExtendWith(MockitoExtension.class)
 class ProductControllerUnitTest {
@@ -354,5 +355,54 @@ class ProductControllerUnitTest {
         );
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
     }
+
+    @Test
+    void deleteById() {
+        Product productFromDB = Product.builder()
+                .id(1L).price(50d).quantity(1).name("prod1").active(true)
+                .build();
+        when(productRepository.findById(1L))
+                .thenReturn(Optional.of(productFromDB));
+
+        var response = productController.deleteById(1L);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+
+        verify(productRepository).save(productFromDB);
+
+    }
+
+  @Test
+  @DisplayName("Borrar productos por lista de ids OK")
+    void deleteAll_OK() {
+       List<Long> ids = List.of(1L, 2L, 3L, 4L, 5L);
+
+       var response = productController.deleteAll(ids);
+
+       assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+       assertNull(response.getBody());
+       verify(productRepository).deleteAllByIdInBatch(ids);
+
+    }
+
+    @Test
+    @DisplayName("Borrar productos por lista de ids lanza excepción")
+    void deleteAll_Exception() {
+        List<Long> ids = List.of(1L, 2L, 3L, 4L, 5L);
+
+
+        // CUIDADO: el metodo es void y requiere un enfoque doThrow en vez de when
+        // when(productRepository.deleteAllByIdInBatch(ids)).thenThrow(new DataIntegrityViolationException("Conflicto"));
+        doThrow(new DataIntegrityViolationException("conflict"))
+                .when(productRepository)
+                .deleteAllByIdInBatch(ids);
+
+        var exception = assertThrows(
+                ResponseStatusException.class,
+                () -> productController.deleteAll(ids)
+        );
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    }
+
 
 }
