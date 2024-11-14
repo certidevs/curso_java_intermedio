@@ -36,6 +36,10 @@ JUNIT 5 + MOCKITO + SPRING TEST + SPRING (SOLO UNA PARTE)
 * Es más lento que el unitario porque carga el contenedor de dependencias Spring.
 * Permite probar las rutas Mapping de los controladores y sus parámetros de forma real lanzando peticiones http con mockMvc y comprobando las respuestas.
 
+* Sirve para
+  * Controladores MVC
+  * Controladores API REST
+
 ## TESTING INTEGRACIÓN COMPLETA
 
 JUNIT 5 + MOCKITO + SPRING TEST + SPRING (COMPLETO) + JPA + HIBERNATE + BASE DE DATOS
