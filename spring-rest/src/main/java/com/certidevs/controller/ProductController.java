@@ -39,7 +39,12 @@ public class ProductController {
 //        }).toList();
 
         var products = productRepository.findAll();
-        products.forEach(p -> p.setPrice(p.getPrice() * IVA_21));
+        // Devolverá precio a 0
+//        products.forEach(p -> p.setPrice(Optional.ofNullable(p.getPrice()).orElse(0d) * IVA_21));
+        // Devolverá precio a null
+        products.forEach(p -> {
+            if(p.getPrice() != null) p.setPrice(p.getPrice() * IVA_21);
+        });
         return ResponseEntity.ok(products);
     }
 
