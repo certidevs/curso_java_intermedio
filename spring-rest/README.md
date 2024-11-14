@@ -61,3 +61,4 @@ JUNIT 5 + SELENIUM
 * Se levanta navegador
 * Se simula una navegación de usuario a través de la UI
 * Más lento aún que los anteriores
+

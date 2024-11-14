@@ -42,6 +42,12 @@ public class ProductControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @BeforeEach
+    void setUp() {
+        // Asegurar que no haya datos antes de cada test
+        productRepository.deleteAll();
+    }
+
     @Test
     void findAll() throws Exception {
         productRepository.saveAll(List.of(
