@@ -73,6 +73,12 @@ public class ProductController {
 
     @PostMapping("products/filter")
     public ResponseEntity<List<Product>> findByFilter(@RequestBody Product product) {
+//        var filtered = productRepository.findAll().stream()
+//                .filter(p -> p.getPrice() > 10d)
+//                .filter(Product::getActive)
+//                .filter(p -> p.getQuantity() > 2)
+//                .toList();
+
         var products = productRepository.findAll(Example.of(product));
         return ResponseEntity.ok(products);
     }
@@ -195,6 +201,7 @@ public class ProductController {
         return ResponseEntity.noContent().build();
 
     }
+
 
     // @RequestParam DELETE /api/products?ids=1,2,3,4,5,6,7,8,9,10
     // @RequestBody DELETE /api/products { "ids": [1, 2, 3]}

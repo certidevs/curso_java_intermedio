@@ -1,11 +1,12 @@
 
 
-## Testing Unitario:
+## TESTING UNITARIO
 
 JUNIT 5, MOCKITO
 
 * @ExtendWith
 * @Mock
+* @InjectMocks
 * JUnit 5:
   * assertEquals
   * assertNotNull
@@ -18,17 +19,41 @@ JUNIT 5, MOCKITO
   * doThrow
   * verify
 
+* Es más rápido
+* No depende de Spring ni de base de datos
+* Se aplica a cualquier clase Java: Controlador, Servicio, Componente
 
-## Testing integración parcial
+## TESTING INTEGRACIÓN PARCIAL
 
-* @WebMvcTest
+JUNIT 5 + MOCKITO + SPRING TEST + SPRING (SOLO UNA PARTE)
+
+* @WebMvcTest(ProductController.class)
 * @MockBean
-* MockMvc
+* @Autowired MockMvc
 
-No carga base de datos. No carga toda la app de spring solo el controlador a testear.
+* No carga base de datos. 
+* No carga toda la app de spring solo el controlador a testear.
+* Es más lento que el unitario porque carga el contenedor de dependencias Spring.
+* Permite probar las rutas Mapping de los controladores y sus parámetros de forma real lanzando peticiones http con mockMvc y comprobando las respuestas.
 
+## TESTING INTEGRACIÓN COMPLETA
 
-## Testing integración completa
+JUNIT 5 + MOCKITO + SPRING TEST + SPRING (COMPLETO) + JPA + HIBERNATE + BASE DE DATOS
 
 * @SpringBootTest
+* @AutoConfigureMockMvc
 * @Transactional
+* @Autowired MockMvc
+
+* Más lento porque carga la base de datos y carga todo Spring, JPA, Hibernate
+* Al interactuar de forma real con todas las capas integradas: controladores, servicios, repositorios
+
+
+## TESTING FUNCIONAL / INTERFAZ USUARIO
+
+JUNIT 5 + SELENIUM
+
+* Se levanta la aplicación real
+* Se levanta navegador
+* Se simula una navegación de usuario a través de la UI
+* Más lento aún que los anteriores
